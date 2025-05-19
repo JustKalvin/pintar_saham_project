@@ -1,0 +1,44 @@
+/* Pastikan root, body, dan home-container memiliki tinggi penuh */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Membuat layout dengan flexbox */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Minimal setinggi layar */
+}
+.modul-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Pastikan tinggi minimum mencakup seluruh viewport */
+}
+
+.row {
+  flex-grow: 1; /* Memastikan konten utama mengisi ruang kosong */
+}
+
+/* Konten utama agar mengisi ruang kosong */
+.content {
+  flex-grow: 1;
+}
+
+/* Footer tetap di bawah */
+footer {
+  margin-top: auto;
+}
+
+.text-justify {
+  text-align: justify;
+  hyphens: auto;
+}
+
+/* .custom-button-outline {
+  border-width: 10px;
+  border-radius: 100px;
+  border-color: #748a64;
+  color: #748a64;
+} */
