@@ -9,6 +9,7 @@ import { PageContext } from "../App.jsx";
 import stonkImage from "../assets/stonk3.jpg";
 import chartImage from "../assets/chart.png";
 import Spline from '@splinetool/react-spline';
+import { motion } from "framer-motion";
 
 const Modul = () => {
   const location = useLocation();
@@ -65,15 +66,57 @@ const Modul = () => {
       />
       <div className="mt-5 pt-5 container">
         <div className="d-flex mt-5 pt-5">
-          <h1 className="text-left text-white" style={{ fontSize: "60px" }}>
-            Pintar
-          </h1>
-          <h1
-            className="text-left"
-            style={{ color: "#748a64", fontSize: "60px" }}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center my-5 py-5"
           >
-            Saham
-          </h1>
+            <motion.h2
+              style={{
+                fontSize: "3rem",
+                fontWeight: "700",
+                textShadow: "0 2px 10px rgba(0,0,0,0.3)",
+                background: "linear-gradient(to right, #fff, #ddd)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                position: "relative",
+                paddingBottom: "20px"
+              }}
+            >
+              Pintar
+              <motion.span
+                style={{
+                  fontSize: "3rem",
+                  fontWeight: "700",
+                  textShadow: "0 2px 10px rgba(0,0,0,0.3)",
+                  background: "linear-gradient(to right, #6F9356, #6F9356)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  position: "relative",
+                  paddingBottom: "20px"
+                }}
+              >
+                Saham
+              </motion.span>
+              <motion.div
+                style={{
+                  position: "absolute",
+                  bottom: "10px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  height: "4px",
+                  width: "100px",
+                  background: "linear-gradient(to right, #d9d9d9, #848484)",
+                  borderRadius: "2px",
+                  marginTop : "100px"
+                }}
+                initial={{ width: 0 }}
+                animate={{ width: "100px" }}
+                transition={{ delay: 0.3, duration: 0.8 }}
+              />
+            </motion.h2>
+          </motion.div>
         </div>
 
         <div className="d-flex flex-row">

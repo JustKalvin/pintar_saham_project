@@ -284,14 +284,45 @@ function Home() {
       />
 
       <div className="container">
-        <motion.h1 
-          className="text-white my-5 py-5"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          Buat Utas Dan Diskusikan <br />Dengan Pengguna Lain
-        </motion.h1>
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="my-5 py-5"
+        style={{textAlign : "left", transform: "translateX(-50%)",}}
+      >
+        <div className="d-flex flex-column ">
+          <motion.h2
+            style={{
+              fontSize: "3rem",
+              fontWeight: "700",
+              textShadow: "0 2px 10px rgba(0,0,0,0.3)",
+              background: "linear-gradient(to right, #fff, #ddd)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              paddingBottom: "40px"
+            }}
+          >
+            Buat Utas Dan Diskusikan<br />Dengan Pengguna Lain
+          </motion.h2>
+
+          <motion.div 
+            style={{
+              bottom: "0px",
+              left: "0", // rata kiri
+              height: "4px",
+              width: "100px",
+              background: "linear-gradient(to right, #d9d9d9, #848484)", 
+              borderRadius: "2px",
+              transform : "translateX(200px)"
+            }}
+            initial={{ width: 0 }}
+            animate={{ width: "100px" }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+          />
+        </div>
+      </motion.div>
+
 
         <div className="d-flex flex-row align-items-center mb-4">
           <motion.button 

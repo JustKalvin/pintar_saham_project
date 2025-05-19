@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {PageContext} from "../App.jsx";
 import styled, { keyframes } from 'styled-components';
+import { motion } from "framer-motion";
 
 // Keyframes untuk animasi border
 const glowingBorder = keyframes`
@@ -133,29 +134,6 @@ const Modul = () => {
     }
   }, [username]);
 
-  // const modules = [
-  //   {
-  //     id: 1,
-  //     title: "Pengenalan Pasar Saham",
-  //     description: "Pelajari dasar-dasar pasar saham dan bagaimana cara kerjanya.",
-  //     videoPage: "/Modules1",
-  //     thumbnail: stonk2,
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Analisis Teknikal Saham",
-  //     description: "Memahami cara membaca grafik dan indikator teknikal.",
-  //     videoPage: "/Modules2",
-  //     thumbnail: stonk2,
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Strategi Investasi Jangka Panjang",
-  //     description: "Pelajari strategi untuk investasi saham jangka panjang.",
-  //     videoPage: "/Modules3",
-  //     thumbnail: stonk2,
-  //   },
-  // ];
   useEffect(() => {
     const handleModules = async () => {
       try{
@@ -239,6 +217,30 @@ const Modul = () => {
     }
     setIsModuleClicked(isModuleClicked => (false));
   };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        when: "beforeChildren"
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    }
+  };
+  
   return (
     <div
       style={{
@@ -264,7 +266,43 @@ const Modul = () => {
         }}
       />
       <div className="flex-grow-1 my-5 py-5">
-        <h2 className="text-center my-5 text-white">Modul Pembelajaran Saham</h2>
+      <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center my-5 py-5"
+          >
+            <motion.h2
+              style={{
+                fontSize: "3rem",
+                fontWeight: "700",
+                textShadow: "0 2px 10px rgba(0,0,0,0.3)",
+                background: "linear-gradient(to right, #fff, #ddd)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                position: "relative",
+                paddingBottom: "20px"
+              }}
+            >
+              Modul Pembelajaran Saham
+              <motion.div 
+                style={{
+                  position: "absolute",
+                  bottom: "10px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  height: "4px",
+                  width: "100px",
+                  background: "linear-gradient(to right, #d9d9d9, #848484)", 
+                  borderRadius: "2px",
+                  marginTop : "100px"
+                }}
+                initial={{ width: 0 }}
+                animate={{ width: "100px" }}
+                transition={{ delay: 0.3, duration: 0.8 }}
+              />
+            </motion.h2>
+          </motion.div>
 
         <div className="container">
           {!isModuleClicked ? (

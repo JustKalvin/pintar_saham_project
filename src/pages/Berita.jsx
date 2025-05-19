@@ -6,6 +6,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import {PageContext} from "../App.jsx"
+import { motion } from "framer-motion";
 
 const News = () => {
   const location = useLocation();
@@ -58,6 +59,29 @@ const News = () => {
     scrollRef.current?.scrollBy({ left: 320, behavior: "smooth" });
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        when: "beforeChildren"
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    }
+  };
+
   return (
     <div
       style={{
@@ -85,7 +109,43 @@ const News = () => {
       />
 
       <div className="container flex-grow-1">
-        <h2 className="text-center my-5 text-white py-5">Tips Memulai Belajar Saham</h2>
+      <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center my-5 py-5"
+          >
+            <motion.h2
+              style={{
+                fontSize: "3rem",
+                fontWeight: "700",
+                textShadow: "0 2px 10px rgba(0,0,0,0.3)",
+                background: "linear-gradient(to right, #fff, #ddd)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                position: "relative",
+                paddingBottom: "20px"
+              }}
+            >
+              Berita Saham
+              <motion.div 
+                style={{
+                  position: "absolute",
+                  bottom: "10px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  height: "4px",
+                  width: "100px",
+                  background: "linear-gradient(to right, #d9d9d9, #848484)", 
+                  borderRadius: "2px",
+                  marginTop : "100px"
+                }}
+                initial={{ width: 0 }}
+                animate={{ width: "100px" }}
+                transition={{ delay: 0.3, duration: 0.8 }}
+              />
+            </motion.h2>
+          </motion.div>
 
         {/* Carousel */}
         <div className="position-relative">
