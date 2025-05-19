@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { PageContext } from "../App.jsx";
 import stonkImage from "../assets/stonk3.jpg";
 import chartImage from "../assets/chart.png";
+import Spline from '@splinetool/react-spline';
 
 const Modul = () => {
   const location = useLocation();
@@ -75,17 +76,25 @@ const Modul = () => {
           </h1>
         </div>
 
-        <div className="d-flex flex-column mt-4">
-          <p className="text-left text-white fs-4">
-            PintarSaham adalah platform edukasi saham interaktif yang dirancang
-            untuk<br></br>membantu pengguna memahami investasi dengan mudah.
-          </p>
-          <p className="text-lef text-white fs-4">
-            Kami menyediakan materi edukatif, simulasi trading, dan analisis
-            pasar<br></br>untuk membantu pengguna membangun strategi investasi
-            yang cerdas
-          </p>
+        <div className="d-flex flex-row">
+          <div className="d-flex flex-column mt-4">
+            <p className="text-left text-white fs-4">
+              PintarSaham adalah platform edukasi saham interaktif yang dirancang
+              untuk<br></br>membantu pengguna memahami investasi dengan mudah.
+            </p>
+            <p className="text-lef text-white fs-4">
+              Kami menyediakan materi edukatif, simulasi trading, dan analisis
+              pasar<br></br>untuk membantu pengguna membangun strategi investasi
+              yang cerdas
+            </p>
+          </div>
+          <div>
+            <Spline
+              scene="https://prod.spline.design/vXCLAC8yW6xqZurs/scene.splinecode" 
+            />
+          </div>
         </div>
+        
 
         <button
           type="button"

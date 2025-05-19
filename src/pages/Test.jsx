@@ -1,18 +1,13 @@
-import React from "react";
+import Spline from '@splinetool/react-spline';
+import Card from "../components/ModuleCard"
 
-const StockChartView = () => {
+export default function Home() {
   return (
-    <div className="w-full h-screen p-4" style={{height : 3000}}>
-      <h2 className="text-xl font-bold mb-2">Stock Chart</h2>
-      <iframe
-        src="https://stock-chart-view.streamlit.app/?embedded=true"
-        width="100%"
-        height="600px"
-        style={{ border: "none" }}
-        title="Stock Chart"
+    <main className="">
+      <Spline
+        scene="https://prod.spline.design/vXCLAC8yW6xqZurs/scene.splinecode"
       />
-    </div>
+      < Card />
+    </main>
   );
-};
-
-export default StockChartView;
+}

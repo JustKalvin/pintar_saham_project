@@ -132,9 +132,6 @@ function Home() {
     }
   }, [isSended])
 
-
-  
-
   const handleText = (event) => {
     setText(text => (event.target.value))
   }

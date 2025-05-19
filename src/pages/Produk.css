@@ -1,0 +1,81 @@
+/* Efek untuk judul */
+.title-animation {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.title-animation.fade-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Animasi entri untuk container kartu (opsional, bisa langsung ke kartu) */
+.card-container-animation {
+  opacity: 0;
+  transform: translateY(30px); /* Mulai dari bawah sedikit */
+  animation: fadeInUp 0.7s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Styling dan efek hover untuk kartu produk */
+.product-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none; /* Hapus border default jika ada */
+  border-radius: 0.5rem; /* Sesuaikan dengan preferensi Anda */
+}
+
+.product-card:hover {
+  transform: translateY(-10px) scale(1.03); /* Sedikit mengangkat dan memperbesar kartu */
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Bayangan lebih kuat saat hover */
+}
+
+/* Styling dan efek hover untuk tombol custom */
+.custom-button {
+  background: linear-gradient(to right, #000000, #527942);
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 0.65rem 1.2rem; /* Sedikit padding lebih besar untuk kenyamanan */
+  border-radius: 0.375rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.4s ease, transform 0.3s ease, box-shadow 0.3s ease; /* Transisi lebih halus */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Bayangan awal untuk tombol */
+}
+
+.custom-button:hover,
+.custom-button:focus { /* Tambahkan :focus untuk aksesibilitas */
+  background: linear-gradient(to right, #1a1a1a, #6aa055); /* Warna sedikit lebih cerah saat hover */
+  color: white; /* Pastikan warna teks tetap putih */
+  transform: translateY(-2px); /* Efek sedikit terangkat */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25); /* Bayangan lebih kuat saat hover */
+  text-decoration: none; /* Pastikan tidak ada underline saat hover/focus */
+}
+
+.custom-button:active { /* Efek saat tombol ditekan */
+  transform: translateY(0px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+
+/* Pastikan gambar di dalam kartu tidak meluap saat kartu membesar */
+.product-card .card-img-top {
+  border-top-left-radius: 0.5rem; /* Sesuaikan dengan border-radius kartu */
+  border-top-right-radius: 0.5rem;
+}
+
+/* Tambahan untuk body jika ingin mencegah flash putih saat background image loading */
+/* body {
+  background-color: #0E1629; Atur warna background awal yang mirip dengan gambar
+} */
