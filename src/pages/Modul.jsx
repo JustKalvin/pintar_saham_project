@@ -88,6 +88,7 @@ const ModuleCard = styled.div`
     color: green; /* Warna centang menjadi hijau */
   }
 `;
+
 const Modul = () => {
   // ... (kode state dan fungsi lainnya tetap sama)
   const location = useLocation();
@@ -104,6 +105,7 @@ const Modul = () => {
   const [selectedModules, setSelectedModules] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const {currPage, handleCurrPage} = useContext(PageContext);
+  const [question, setQuestion] = useState("");
 
   useEffect(() =>{
     handleCurrPage("Modul");
@@ -217,6 +219,10 @@ const Modul = () => {
     }
     setIsModuleClicked(isModuleClicked => (false));
   };
+
+  const handleQuestion = (event) => {
+    setQuestion(question => (event.target.value))
+  } 
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -372,6 +378,10 @@ const Modul = () => {
                   Submit
                 </button>
                 <p className="text-danger h6 mt-4">{message}</p>
+              </div>
+              <div>
+                <input onChange={handleQuestion} type="text"/>
+                <p>{question}</p>
               </div>
             </div>
           )}
