@@ -246,6 +246,13 @@ const Modul = () => {
       }
     }
   };
+
+  const handleSendQuestion = async (modulId) => {
+    const response = await axios.post("https://nominally-picked-grubworm.ngrok-free.app/webhook-test/modul", {
+      id : modulId
+    })
+    console.log(response.data)
+  }
   
   return (
     <div
@@ -355,13 +362,15 @@ const Modul = () => {
                     <h4 className="text-center">{selectedModules.question}</h4>
                     <div className="mt-3">
                       {selectedModules.option.map((choice, index) => (
-                        <button
-                          key={index}
-                          className={`btn btn-outline-light d-block w-100 my-2 ${selectedAnswer === choice ? (isCorrect ? "btn-success" : "btn-danger") : ""}`}
-                          onClick={() => handleAnswer(choice)}
-                        >
-                          {choice}
-                        </button>
+                        <div>
+                          <button
+                            key={index}
+                            className={`btn btn-outline-light d-block w-100 my-2 ${selectedAnswer === choice ? (isCorrect ? "btn-success" : "btn-danger") : ""}`}
+                            onClick={() => handleAnswer(choice)}
+                          >
+                            {choice}
+                          </button>
+                        </div>
                       ))}
                     </div>
                     {selectedAnswer && (
@@ -378,10 +387,10 @@ const Modul = () => {
                   Submit
                 </button>
                 <p className="text-danger h6 mt-4">{message}</p>
-              </div>
-              <div>
-                <input onChange={handleQuestion} type="text"/>
+                <input type="text" onChange={handleQuestion} />
                 <p>{question}</p>
+                <button onClick={() => handleSendQuestion(selectedModules.id)}>Send</button>
+                <p>{selectedModules.id}</p>
               </div>
             </div>
           )}
