@@ -6,18 +6,18 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import {PageContext} from "../App.jsx";
+import { PageContext } from "../App.jsx";
 import styled, { keyframes } from 'styled-components';
 import { motion } from "framer-motion";
 
-// Keyframes untuk animasi border
+// Keyframes for border animation
 const glowingBorder = keyframes`
   0% { border-color: rgba(255, 255, 255, 0.5); box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); }
   50% { border-color: #00ff00; box-shadow: 0 0 20px rgba(0, 255, 0, 0.7); }
   100% { border-color: rgba(255, 255, 255, 0.5); box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); }
 `;
 
-// Styled components untuk card 3D dengan animasi border
+// Styled components for 3D card with border animation
 const ModuleCard = styled.div`
   width: 18rem;
   cursor: pointer;
@@ -25,7 +25,7 @@ const ModuleCard = styled.div`
   margin-bottom: 1rem;
   transform-style: preserve-3d;
   transition: all 0.5s ease-in-out;
-  border-radius: 10px; // Tambahkan border-radius di sini
+  border-radius: 10px;
 
   .card-inner {
     position: relative;
@@ -44,7 +44,7 @@ const ModuleCard = styled.div`
     .card-inner {
       transform: rotate3d(0.5, 1, 0, 15deg);
       background-position: -30px 30px, -30px 30px;
-      animation: ${glowingBorder} 2s linear infinite; /* Tambahkan animasi saat hover */
+      animation: ${glowingBorder} 2s linear infinite;
     }
 
     .card-title, .card-text {
@@ -65,7 +65,7 @@ const ModuleCard = styled.div`
   }
 
   .card-title {
-    color: black; /* Ubah warna teks menjadi hitam agar terlihat dengan border hijau */
+    color: black;
     font-weight: bold;
     transition: transform 0.5s;
     transform: translateZ(10px);
@@ -73,7 +73,7 @@ const ModuleCard = styled.div`
   }
 
   .card-text {
-    color: rgba(0, 0, 0, 0.8); /* Ubah warna teks menjadi agak hitam */
+    color: rgba(0, 0, 0, 0.8);
     transition: transform 0.5s;
     transform: translateZ(5px);
   }
@@ -85,12 +85,81 @@ const ModuleCard = styled.div`
     font-size: 1.5rem;
     transform: translateZ(15px);
     text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    color: green; /* Warna centang menjadi hijau */
+    color: green;
   }
 `;
 
+// Styled components for the chatbot interface
+const ChatbotContainer = styled(motion.div)`
+  background: rgba(255, 255, 255, 0.1); /* Slightly transparent background */
+  border-radius: 15px;
+  padding: 2rem;
+  margin-top: 3rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px); /* Frosted glass effect */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+`;
+
+const ChatMessage = styled(motion.div)`
+  background: ${props => props.isUser ? '#007bff' : '#6c757d'};
+  color: white;
+  padding: 0.8rem 1.2rem;
+  border-radius: ${props => props.isUser ? '15px 15px 0 15px' : '15px 15px 15px 0'};
+  margin-bottom: 1rem;
+  max-width: 80%;
+  align-self: ${props => props.isUser ? 'flex-end' : 'flex-start'};
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+`;
+
+const ChatInputContainer = styled.div`
+  display: flex;
+  margin-top: 1.5rem;
+  gap: 10px;
+`;
+
+const ChatInput = styled.input`
+  flex-grow: 1;
+  padding: 0.8rem 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  &:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+`;
+
+const SendButton = styled.button`
+  background-color: #28a745; /* Green for send */
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 0.8rem 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  &:hover {
+    background-color: #218838;
+  }
+`;
+
+const ChatMessagesWrapper = styled.div`
+  max-height: 300px; /* Limit height for scrollability */
+  overflow-y: auto;
+  padding-right: 10px; /* For scrollbar */
+  display: flex;
+  flex-direction: column;
+`;
+
+
 const Modul = () => {
-  // ... (kode state dan fungsi lainnya tetap sama)
   const location = useLocation();
   const navigate = useNavigate();
   const [userModules, setUserModules] = useState([]);
@@ -104,10 +173,11 @@ const Modul = () => {
   const [idClicked, setIdClicked] = useState(null);
   const [selectedModules, setSelectedModules] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
-  const {currPage, handleCurrPage} = useContext(PageContext);
+  const { currPage, handleCurrPage } = useContext(PageContext);
   const [question, setQuestion] = useState("");
+  const [chatHistory, setChatHistory] = useState([]); // To store chat messages
 
-  useEffect(() =>{
+  useEffect(() => {
     handleCurrPage("Modul");
   }, []);
 
@@ -120,7 +190,7 @@ const Modul = () => {
     const img = new Image();
     img.src = backgroundImage;
     img.onload = () => {
-      setBgHeight(`${img.height}px`); // Set tinggi sesuai gambar
+      setBgHeight(`${img.height}px`);
     };
   }, []);
 
@@ -138,12 +208,10 @@ const Modul = () => {
 
   useEffect(() => {
     const handleModules = async () => {
-      try{
+      try {
         const response = await axios.get("http://127.0.0.1:8000/modules");
-        setModules(modules => (response.data));
-        console.log(response.data);
-      }
-      catch(error) {
+        setModules(response.data);
+      } catch (error) {
         console.log("Error when getting modules!");
       }
     };
@@ -151,35 +219,34 @@ const Modul = () => {
   }, []);
 
   const handleIsModuleClicked = (id) => {
-    setIsModuleClicked(isModuleClicked => (!isModuleClicked));
-    setIdClicked(idClicked => (id));
+    setIsModuleClicked(true);
+    setIdClicked(id);
     const temp_module = modules.filter((item, index) => (index + 1) === id);
-    setSelectedModules(selectedModules => (temp_module[0]));
-    console.log("nih");
-    console.log(temp_module[0]);
+    setSelectedModules(temp_module[0]);
+    setChatHistory([]); // Clear chat history when a new module is selected
+    setQuestion(""); // Clear question input
   };
 
   const handleAnswer = (answer) => {
     let valid = false;
-    if(selectedOption) {
+    if (selectedOption) {
       selectedModules.option.forEach((item, index) => {
-        if(answer === item) {
-          if(selectedOption === index + 1) {
+        if (answer === item) {
+          if (selectedOption === index + 1) {
             valid = true;
           }
         }
       });
     }
-    if(valid) {
+    if (valid) {
       setSelectedAnswer(null);
       setSelectedOption(null);
       setIsCorrect(null);
-    }
-    else {
+    } else {
       setSelectedAnswer(answer);
       setIsCorrect(answer === selectedModules.correctAnswer);
       selectedModules.option.forEach((item, index) => {
-        if(answer === item) {
+        if (answer === item) {
           setSelectedOption(index + 1);
         }
       });
@@ -200,7 +267,6 @@ const Modul = () => {
       return;
     }
 
-    // Cek apakah "Modul 1" sudah ada di userModules
     if (userModules.includes(`Modul ${selectedModules.id}`)) {
       setMessage("Kamu Sudah Pernah Menjawab Benar. 👍");
       return;
@@ -212,17 +278,39 @@ const Modul = () => {
       await axios.put(`http://localhost:8000/users/${username}/modules`, updatedModules);
       setUserModules(updatedModules);
       setMessage("Modul berhasil ditambahkan.");
-      navigate("/Modul");
+      navigate("/Modul"); // Consider whether to navigate back or just show success
     } catch (error) {
       console.error("Error updating user modules:", error);
       setMessage("Terjadi kesalahan saat menambahkan modul.");
     }
-    setIsModuleClicked(isModuleClicked => (false));
+    setIsModuleClicked(false);
   };
 
-  const handleQuestion = (event) => {
-    setQuestion(question => (event.target.value))
-  } 
+  const handleQuestionChange = (event) => {
+    setQuestion(event.target.value);
+  };
+
+  const handleSendQuestion = async (modulId) => {
+    if (!question.trim()) return; // Don't send empty questions
+
+    const newUserMessage = { text: question, isUser: true };
+    setChatHistory(prev => [...prev, newUserMessage]);
+    setQuestion(""); // Clear input field
+
+    try {
+      const response = await axios.post("https://nominally-picked-grubworm.ngrok-free.app/webhook-test/modul", {
+        id: modulId,
+        question: question
+      });
+      const botAnswer = response.data.message.content.answer;
+      const newBotMessage = { text: botAnswer, isUser: false };
+      setChatHistory(prev => [...prev, newBotMessage]);
+    } catch (error) {
+      console.error("Error sending question to chatbot:", error);
+      const errorMessage = { text: "Maaf, terjadi kesalahan saat menghubungi chatbot.", isUser: false };
+      setChatHistory(prev => [...prev, errorMessage]);
+    }
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -247,13 +335,6 @@ const Modul = () => {
     }
   };
 
-  const handleSendQuestion = async (modulId) => {
-    const response = await axios.post("https://nominally-picked-grubworm.ngrok-free.app/webhook-test/modul", {
-      id : modulId
-    })
-    console.log(response.data)
-  }
-  
   return (
     <div
       style={{
@@ -279,43 +360,43 @@ const Modul = () => {
         }}
       />
       <div className="flex-grow-1 my-5 py-5">
-      <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center my-5 py-5"
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center my-5 py-5"
+        >
+          <motion.h2
+            style={{
+              fontSize: "3rem",
+              fontWeight: "700",
+              textShadow: "0 2px 10px rgba(0,0,0,0.3)",
+              background: "linear-gradient(to right, #fff, #ddd)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              position: "relative",
+              paddingBottom: "20px"
+            }}
           >
-            <motion.h2
+            Modul Pembelajaran Saham
+            <motion.div
               style={{
-                fontSize: "3rem",
-                fontWeight: "700",
-                textShadow: "0 2px 10px rgba(0,0,0,0.3)",
-                background: "linear-gradient(to right, #fff, #ddd)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                position: "relative",
-                paddingBottom: "20px"
+                position: "absolute",
+                bottom: "10px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                height: "4px",
+                width: "100px",
+                background: "linear-gradient(to right, #d9d9d9, #848484)",
+                borderRadius: "2px",
+                marginTop: "100px"
               }}
-            >
-              Modul Pembelajaran Saham
-              <motion.div 
-                style={{
-                  position: "absolute",
-                  bottom: "10px",
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  height: "4px",
-                  width: "100px",
-                  background: "linear-gradient(to right, #d9d9d9, #848484)", 
-                  borderRadius: "2px",
-                  marginTop : "100px"
-                }}
-                initial={{ width: 0 }}
-                animate={{ width: "100px" }}
-                transition={{ delay: 0.3, duration: 0.8 }}
-              />
-            </motion.h2>
-          </motion.div>
+              initial={{ width: 0 }}
+              animate={{ width: "100px" }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+            />
+          </motion.h2>
+        </motion.div>
 
         <div className="container">
           {!isModuleClicked ? (
@@ -341,7 +422,6 @@ const Modul = () => {
               })}
             </div>
           ) : (
-            // ... (kode untuk tampilan modul yang diklik tetap sama)
             <div className="container text-white pt-5">
               <div className="d-flex justify-content-center pt-5">
                 <iframe
@@ -357,14 +437,13 @@ const Modul = () => {
                 <button className="btn btn-outline-light d-block mx-auto" onClick={() => setShowQuiz(!showQuiz)}>
                   {showQuiz ? "Sembunyikan Quiz" : "Tampilkan Quiz"}
                 </button>
-                {showQuiz ? (
+                {showQuiz && (
                   <div className="mt-4 p-4 bg-transparent rounded">
                     <h4 className="text-center">{selectedModules.question}</h4>
                     <div className="mt-3">
                       {selectedModules.option.map((choice, index) => (
-                        <div>
+                        <div key={index}>
                           <button
-                            key={index}
                             className={`btn btn-outline-light d-block w-100 my-2 ${selectedAnswer === choice ? (isCorrect ? "btn-success" : "btn-danger") : ""}`}
                             onClick={() => handleAnswer(choice)}
                           >
@@ -379,19 +458,52 @@ const Modul = () => {
                       </p>
                     )}
                   </div>
-                ) : (null)}
-
+                )}
               </div>
               <div className="text-center mt-5">
                 <button className="btn btn-light" onClick={() => handleModuleSubmit()}>
                   Submit
                 </button>
                 <p className="text-danger h6 mt-4">{message}</p>
-                <input type="text" onChange={handleQuestion} />
-                <p>{question}</p>
-                <button onClick={() => handleSendQuestion(selectedModules.id)}>Send</button>
-                <p>{selectedModules.id}</p>
               </div>
+
+              {/* Chatbot Section */}
+              <ChatbotContainer
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <h4 className="text-center text-white mb-4">Tanya Bot Modul Ini</h4>
+                <ChatMessagesWrapper>
+                  {chatHistory.map((msg, index) => (
+                    <ChatMessage
+                      key={index}
+                      isUser={msg.isUser}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                    >
+                      {msg.text}
+                    </ChatMessage>
+                  ))}
+                </ChatMessagesWrapper>
+                <ChatInputContainer>
+                  <ChatInput
+                    type="text"
+                    placeholder="Ketik pertanyaan Anda di sini..."
+                    value={question}
+                    onChange={handleQuestionChange}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSendQuestion(selectedModules.id);
+                      }
+                    }}
+                  />
+                  <SendButton onClick={() => handleSendQuestion(selectedModules.id)}>
+                    Kirim
+                  </SendButton>
+                </ChatInputContainer>
+              </ChatbotContainer>
             </div>
           )}
         </div>
