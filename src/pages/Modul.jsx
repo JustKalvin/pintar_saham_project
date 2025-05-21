@@ -9,6 +9,7 @@ import axios from "axios";
 import { PageContext } from "../App.jsx";
 import styled, { keyframes } from 'styled-components';
 import { motion } from "framer-motion";
+import LockedImage from "../assets/Locked.jpg"
 
 // Keyframes for border animation
 const glowingBorder = keyframes`
@@ -158,6 +159,62 @@ const ChatMessagesWrapper = styled.div`
   flex-direction: column;
 `;
 
+const LockedContainer = styled(motion.div)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 0;
+  margin: 2rem 0;
+  perspective: 1000px;
+`;
+
+const LockedImageWrapper = styled(motion.div)`
+  width: 50%;
+  height: auto;
+  position: relative;
+  cursor: pointer;
+  transform-style: preserve-3d;
+`;
+
+const LockedText = styled(motion.p)`
+  font-size: 1.2rem;
+  margin-top: 1.5rem;
+  text-align: center;
+  background: linear-gradient(90deg, #ff0000, #ff8c00, #ff0000);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: ${props => props.animate ? 'shine 2s linear infinite' : 'none'};
+  
+  @keyframes shine {
+    to {
+      background-position: 200% center;
+    }
+  }
+`;
+
+const LockShine = styled.div`
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shine 3s infinite;
+  
+  @keyframes shine {
+    100% {
+      left: 100%;
+    }
+  }
+`;
+
+
 
 const Modul = () => {
   const location = useLocation();
@@ -176,6 +233,7 @@ const Modul = () => {
   const { currPage, handleCurrPage } = useContext(PageContext);
   const [question, setQuestion] = useState("");
   const [chatHistory, setChatHistory] = useState([]); // To store chat messages
+  const [selectedModuleId, setSelectedModuleId] = useState([""])
 
   useEffect(() => {
     handleCurrPage("Modul");
@@ -219,6 +277,7 @@ const Modul = () => {
   }, []);
 
   const handleIsModuleClicked = (id) => {
+    setSelectedModuleId("Modul " + String(id))
     setIsModuleClicked(true);
     setIdClicked(id);
     const temp_module = modules.filter((item, index) => (index + 1) === id);
@@ -467,8 +526,8 @@ const Modul = () => {
                 <p className="text-danger h6 mt-4">{message}</p>
               </div>
 
-              {/* Chatbot Section */}
-              <ChatbotContainer
+              {isCorrect || userModules.includes(selectedModuleId) ? (
+                <ChatbotContainer
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
@@ -504,6 +563,43 @@ const Modul = () => {
                   </SendButton>
                 </ChatInputContainer>
               </ChatbotContainer>
+              ) : (
+                <LockedContainer
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <LockedImageWrapper
+                    whileHover={{ scale: 1.05, rotateY: 10 }}
+                    whileTap={{ scale: 0.95 }}
+                    animate={{
+                      y: [0, -10, 0],
+                    }}
+                    transition={{
+                      y: {
+                        repeat: Infinity,
+                        duration: 2,
+                        ease: "easeInOut"
+                      }
+                    }}
+                  >
+                    <img
+                      src={LockedImage}
+                      alt="Locked"
+                      style={{ width: "100%", height: "auto" }}
+                    />
+                    
+                  </LockedImageWrapper>
+                  <LockedText
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
+                  >
+                    Jawab QUIZ Untuk Membuka Bot
+                  </LockedText>
+                </LockedContainer>
+              )}
+              {/* Chatbot Section */}
             </div>
           )}
         </div>
