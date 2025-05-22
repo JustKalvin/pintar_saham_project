@@ -250,7 +250,7 @@ const Modul = () => {
         </div>
 
         {/* Berita Saham */}
-        <div className="mt-5 pt-5 container">
+        {/* <div className="mt-5 pt-5 container">
           <div className="mt-3 pt-5">
             <h1 className="text-left text-white" style={{ fontSize: "60px" }}>
               Berita Saham
@@ -422,8 +422,10 @@ const Modul = () => {
                 <span className="visually-hidden">Next</span>
               </button>
             </div>
-          </div>
-        </div>
+          </div> */}
+
+
+        {/* </div> */}
       </div>
 
       {/* Stock Chart View */}

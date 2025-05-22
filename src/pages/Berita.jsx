@@ -29,7 +29,7 @@ const News = () => {
     const fetchAPI = async () => {
       try {
         const response = await axios.post(
-          "https://nominally-picked-grubworm.ngrok-free.app/webhook/scrapping-saham"
+          "https://nominally-picked-grubworm.ngrok-free.app/webhook/scrap-stock-news"
         );
         console.log("News data:", response.data);
         setArticles(response.data);
