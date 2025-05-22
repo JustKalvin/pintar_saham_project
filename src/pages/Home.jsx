@@ -10,11 +10,25 @@ import stonkImage from "../assets/stonk3.jpg";
 import chartImage from "../assets/chart.png";
 import Spline from '@splinetool/react-spline';
 import { motion } from "framer-motion";
+import axios from "axios";
 
 const Modul = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { currPage, handleCurrPage } = useContext(PageContext);
+  const [modules, setModules] = useState([])
+
+  useEffect(() => {
+    const handleModules = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/modules");
+        setModules(response.data);
+      } catch (error) {
+        console.log("Error when getting modules!");
+      }
+    };
+    handleModules();
+  }, []);
 
   useEffect(() => {
     handleCurrPage("Home");
@@ -249,183 +263,130 @@ const Modul = () => {
           </button>
         </div>
 
-        {/* Berita Saham */}
-        {/* <div className="mt-5 pt-5 container">
-          <div className="mt-3 pt-5">
-            <h1 className="text-left text-white" style={{ fontSize: "60px" }}>
-              Berita Saham
-            </h1>
-            <p
-              className="mt-3 text-left text-white"
-              style={{ fontSize: "20px" }}
-            >
-              Berita saham terbaru menghadirkan informasi penting tentang
-              peluang investasi yang sedang naik daun dan pergerakan pasar yang
-              cepat berubah. Dapatkan update real-time tentang saham-saham
-              unggulan, analisis mendalam dari para ahli, serta tips strategi
-              yang bisa meningkatkan keuntungan Anda. Jangan lewatkan kesempatan
-              emas untuk memantau tren pasar dan membuat keputusan investasi
-              yang tepat hanya di website kami!
-            </p>
-          </div>
-
-          <div>
-            <div
-              id="carouselExample"
-              className="carousel slide"
-              data-bs-ride="carousel"
-            >
-              <div className="carousel-inner">
-                <div className="carousel-item active">
-                  <div className="container d-flex justify-content-evenly mt-5">
-                    <div className="card" style={{ width: "18rem" }}>
-                      <img
-                        src={stonkImage}
-                        className="card-img-top"
-                        alt="Sample"
-                      />
-                      <div className="card-body">
-                        <h5 className="card-title">Harga Antam Naik</h5>
-                        <p className="card-text">
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit.
-                        </p>
-                        <a href="#" className="btn btn-primary">
-                          Learn more
-                        </a>
-                      </div>
-                    </div>
-                    <div className="card" style={{ width: "18rem" }}>
-                      <img
-                        src={stonkImage}
-                        className="card-img-top"
-                        alt="Sample"
-                      />
-                      <div className="card-body">
-                        <h5 className="card-title">Card Title</h5>
-                        <p className="card-text">
-                          Some quick example text to build on the card title and
-                          make up the bulk of the card's content.
-                        </p>
-                        <a href="#" className="btn btn-primary">
-                          Learn more
-                        </a>
-                      </div>
-                    </div>
-                    <div className="card" style={{ width: "18rem" }}>
-                      <img
-                        src={stonkImage}
-                        className="card-img-top"
-                        alt="Sample"
-                      />
-                      <div className="card-body">
-                        <h5 className="card-title">Card Title</h5>
-                        <p className="card-text">
-                          Some quick example text to build on the card title and
-                          make up the bulk of the card's content.
-                        </p>
-                        <a href="#" className="btn btn-primary">
-                          Learn more
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="carousel-item">
-                  <div className="container d-flex justify-content-evenly mt-5">
-                    <div className="card" style={{ width: "18rem" }}>
-                      <img
-                        src={stonkImage}
-                        className="card-img-top"
-                        alt="Sample"
-                      />
-                      <div className="card-body">
-                        <h5 className="card-title">Card Title</h5>
-                        <p className="card-text">
-                          Some quick example text to build on the card title and
-                          make up the bulk of the card's content.
-                        </p>
-                        <a href="#" className="btn btn-primary">
-                          Learn more
-                        </a>
-                      </div>
-                    </div>
-                    <div className="card" style={{ width: "18rem" }}>
-                      <img
-                        src={stonkImage}
-                        className="card-img-top"
-                        alt="Sample"
-                      />
-                      <div className="card-body">
-                        <h5 className="card-title">Card Title</h5>
-                        <p className="card-text">
-                          Some quick example text to build on the card title and
-                          make up the bulk of the card's content.
-                        </p>
-                        <a href="#" className="btn btn-primary">
-                          Learn more
-                        </a>
-                      </div>
-                    </div>
-                    <div className="card" style={{ width: "18rem" }}>
-                      <img
-                        src={stonkImage}
-                        className="card-img-top"
-                        alt="Sample"
-                      />
-                      <div className="card-body">
-                        <h5 className="card-title">Harga Batu Bara Turun</h5>
-                        <p className="card-text">
-                          Some quick example text to build on the card title and
-                          make up the bulk of the card's content.
-                        </p>
-                        <a href="#" className="btn btn-primary">
-                          Learn more
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+        {/* <div>
+          <p className="text-white">Berita</p>
+          {modules.map((item, index) => {
+            return(
+              <div>
+                <p className="text-white">{item.title}</p>
               </div>
-              <button
-                className="carousel-control-prev pe-5"
-                type="button"
-                data-bs-target="#carouselExample"
-                data-bs-slide="prev"
-              >
-                <span
-                  className="carousel-control-prev-icon"
-                  aria-hidden="true"
-                  style={{
-                    width: "56px",
-                    height: "78px",
-                    objectFit: "cover",
-                  }}
-                ></span>
-                <span className="visually-hidden">Previous</span>
-              </button>
-              <button
-                className="carousel-control-next ps-5"
-                type="button"
-                data-bs-target="#carouselExample"
-                data-bs-slide="next"
-              >
-                <span
-                  className="carousel-control-next-icon"
-                  aria-hidden="true"
-                  style={{
-                    width: "56px",
-                    height: "78px",
-                    objectFit: "cover",
-                  }}
-                ></span>
-                <span className="visually-hidden">Next</span>
-              </button>
+            )
+          })}
+        </div> */}
+
+
+        {/* Berita Saham */}
+        {/* Modules Section */}
+<div className="mt-5 pt-5 container">
+  <div className="mt-3 pt-5">
+    <h1 className="text-left text-white" style={{ fontSize: "60px" }}>
+      Our Learning Modules
+    </h1>
+    <p className="mt-3 text-left text-white" style={{ fontSize: "20px" }}>
+      Explore our comprehensive learning modules designed to take you from beginner to proficient investor.
+      Each module covers essential topics with interactive content and practical exercises.
+    </p>
+  </div>
+
+  <div>
+    {modules.length > 0 ? (
+      <div
+        id="modulesCarousel"
+        className="carousel slide"
+        data-bs-ride="carousel"
+      >
+        <div className="carousel-inner">
+          {/* Create groups of 3 modules per carousel item */}
+          {modules.reduce((acc, module, index) => {
+            const chunkIndex = Math.floor(index / 3);
+            
+            if (!acc[chunkIndex]) {
+              acc[chunkIndex] = [];
+            }
+            
+            acc[chunkIndex].push(module);
+            return acc;
+          }, []).map((moduleGroup, groupIndex) => (
+            <div 
+              className={`carousel-item ${groupIndex === 0 ? 'active' : ''}`} 
+              key={`module-group-${groupIndex}`}
+            >
+              <div className="container d-flex justify-content-evenly mt-5">
+                {moduleGroup.map((module, moduleIndex) => (
+                  <div className="card" style={{ width: "18rem" }} key={`module-${groupIndex}-${moduleIndex}`}>
+                    <img 
+                      src={module.image_url || stonkImage} 
+                      className="card-img-top" 
+                      alt={module.title} 
+                      style={{ height: "180px", objectFit: "cover" }}
+                    />
+                    <div className="card-body">
+                      <h5 className="card-title">{module.title}</h5>
+                      <p className="card-text">
+                        {module.description || "Learn about stock market fundamentals and strategies."}
+                      </p>
+                      <a 
+                        href={`/module/${module.id}`} 
+                        className="btn btn-primary"
+                        style={{
+                          backgroundColor: "#6F9356",
+                          borderColor: "#6F9356"
+                        }}
+                      >
+                        Start Learning
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div> */}
-
-
-        {/* </div> */}
+          ))}
+        </div>
+        <button
+          className="carousel-control-prev pe-5"
+          type="button"
+          data-bs-target="#modulesCarousel"
+          data-bs-slide="prev"
+        >
+          <span
+            className="carousel-control-prev-icon"
+            aria-hidden="true"
+            style={{
+              width: "56px",
+              height: "78px",
+              objectFit: "cover",
+            }}
+          ></span>
+          <span className="visually-hidden">Previous</span>
+        </button>
+        <button
+          className="carousel-control-next ps-5"
+          type="button"
+          data-bs-target="#modulesCarousel"
+          data-bs-slide="next"
+        >
+          <span
+            className="carousel-control-next-icon"
+            aria-hidden="true"
+            style={{
+              width: "56px",
+              height: "78px",
+              objectFit: "cover",
+            }}
+          ></span>
+          <span className="visually-hidden">Next</span>
+        </button>
+      </div>
+    ) : (
+      <div className="text-center text-white mt-5">
+        <p>Loading modules...</p>
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    )}
+  </div>
+</div>
       </div>
 
       {/* Stock Chart View */}
