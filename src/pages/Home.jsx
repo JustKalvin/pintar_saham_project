@@ -1,33 +1,46 @@
 import backgroundImage from "../assets/BackgroundBody.png";
-import stonk2 from "../assets/stonk2.jpg";
+import stonk2 from "../assets/stonk2.jpg"; // This import seems unused
 import React, { useState, useEffect, useContext } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom"; // useNavigate seems unused
 import { PageContext } from "../App.jsx";
-import stonkImage from "../assets/stonk3.jpg";
+import stonkImage from "../assets/stonk3.jpg"; // Used for module cards and forum cards
 import chartImage from "../assets/chart.png";
 import Spline from '@splinetool/react-spline';
 import { motion } from "framer-motion";
 import axios from "axios";
+import thumbnail1 from "../assets/thumbnail1.jpg"
+import thumbnail2 from "../assets/thumbnail2.jpg"
+import thumbnail3 from "../assets/thumbnail3.jpg"
+import thumbnail4 from "../assets/thumbnail4.jpg"
+import discussion from "../assets/discussion.png"
+
+import { Link } from "react-router-dom";
+
 
 const Modul = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { currPage, handleCurrPage } = useContext(PageContext);
-  const [modules, setModules] = useState([])
+  const { handleCurrPage } = useContext(PageContext);
+  const [news, setNews] = useState({ title: [], link: [], image: [] }); // Initialize with empty arrays to prevent errors
 
   useEffect(() => {
-    const handleModules = async () => {
+    const fetchAPI = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/modules");
-        setModules(response.data);
+        const response = await axios.post(
+          "https://nominally-picked-grubworm.ngrok-free.app/webhook/scrap-stock-news"
+        );
+        console.log("News data:", response.data);
+        setNews(response.data);
       } catch (error) {
-        console.log("Error when getting modules!");
+        console.error("Error fetching news:", error);
+        // Optionally, set news to a default empty state or show an error message
+        setNews({ title: [], link: [], image: [] });
       }
     };
-    handleModules();
+
+    fetchAPI();
   }, []);
 
   useEffect(() => {
@@ -48,6 +61,7 @@ const Modul = () => {
     };
   }, []);
 
+  // completedModules state is not used in the provided JSX, but kept for completeness
   const [completedModules, setCompletedModules] = useState({
     module1: localStorage.getItem("module1_completed") === "true",
     module2: localStorage.getItem("module2_completed") === "true",
@@ -123,7 +137,7 @@ const Modul = () => {
                   width: "100px",
                   background: "linear-gradient(to right, #d9d9d9, #848484)",
                   borderRadius: "2px",
-                  marginTop : "100px"
+                  marginTop: "100px"
                 }}
                 initial={{ width: 0 }}
                 animate={{ width: "100px" }}
@@ -147,30 +161,13 @@ const Modul = () => {
           </div>
           <div>
             <Spline
-              scene="https://prod.spline.design/vXCLAC8yW6xqZurs/scene.splinecode" 
+              scene="https://prod.spline.design/vXCLAC8yW6xqZurs/scene.splinecode"
             />
           </div>
         </div>
-        
-
-        <button
-          type="button"
-          className="btn btn-dark mt-5"
-          style={{
-            padding: "10px 36px", // padding (top-bottom: 10px, left-right: 30px)
-            borderWidth: "2px", // thicker outline
-            borderRadius: "50px", // rounded corners     // custom green border
-            color: "#ffff", // text color
-            fontSize: "20px",
-            borderColor: "#71af58",
-            //backgroundColor: "#1b1b1b"
-          }}
-        >
-          Learn More
-        </button>
       </div>
 
-      <div className="mt-5 ">
+      <div className="mt-5 d-flex flex-column align-items-center">
         <div>
           <h1
             className="pt-5 text-center text-white"
@@ -193,201 +190,151 @@ const Modul = () => {
         </div>
         <div className="container d-flex justify-content-evenly mt-5">
           <div className="card" style={{ width: "18rem" }}>
-            <img src={stonkImage} className="card-img-top" alt="Sample" />
+            <img src={thumbnail1} className="card-img-top" alt="Sample" />
             <div className="card-body">
-              <h5 className="card-title">Card Title</h5>
+              <h5 className="card-title">Pengenalan Pasar Saham</h5>
               <p className="card-text">
-                Some quick example text to build on the card title and make up
-                the bulk of the card's content.
+                Video ini menjelaskan bagaimana produk di sekitar kita berasal dari perusahaan yang sahamnya bisa dibeli.
               </p>
-              <a href="#" className="btn btn-primary">
-                Learn more
-              </a>
             </div>
           </div>
           <div className="card" style={{ width: "18rem" }}>
-            <img src={stonkImage} className="card-img-top" alt="Sample" />
+            <img src={thumbnail2} className="card-img-top" alt="Sample" />
             <div className="card-body">
-              <h5 className="card-title">Card Title</h5>
+              <h5 className="card-title">Cara Membeli Saham</h5>
               <p className="card-text">
-                Some quick example text to build on the card title and make up
-                the bulk of the card's content.
+                Video ini menjelaskan alur sederhana agar Anda lebih memahami mekanisme jual beli saham.
               </p>
-              <a href="#" className="btn btn-primary">
-                Learn more
-              </a>
             </div>
           </div>
           <div className="card" style={{ width: "18rem" }}>
-            <img src={stonkImage} className="card-img-top" alt="Sample" />
+            <img src={thumbnail3} className="card-img-top" alt="Sample" />
             <div className="card-body">
-              <h5 className="card-title">Card Title</h5>
+              <h5 className="card-title">Pentingya Belajar Investasi Saham Dahulu</h5>
               <p className="card-text">
-                Some quick example text to build on the card title and make up
-                the bulk of the card's content.
+                Video ini dibuat untuk mendorong Anda belajar lebih dulu sebelum berinvestasi di pasar modal.
               </p>
-              <a href="#" className="btn btn-primary">
-                Learn more
-              </a>
             </div>
           </div>
           <div className="card" style={{ width: "18rem" }}>
-            <img src={stonkImage} className="card-img-top" alt="Sample" />
+            <img src={thumbnail4} className="card-img-top" alt="Sample" />
             <div className="card-body">
-              <h5 className="card-title">Card Title</h5>
+              <h5 className="card-title">Saham dari nol.</h5>
               <p className="card-text">
-                Some quick example text to build on the card title and make up
-                the bulk of the card's content.
+                Video ini dibuat untuk memperkenalkan saham dari nol.
               </p>
-              <a href="#" className="btn btn-primary">
-                Learn more
-              </a>
             </div>
           </div>
         </div>
         <div className="d-flex justify-content-center ">
-          <button
-            type="button"
-            className="btn btn-dark mt-5"
-            style={{
-              padding: "10px 36px", // padding (top-bottom: 10px, left-right: 30px)
-              borderWidth: "2px", // thicker outline
-              borderRadius: "50px", // rounded corners     // custom green border
-              color: "#ffff", // text color
-              fontSize: "20px",
-              borderColor: "#71af58",
-              //backgroundColor: "#1b1b1b"
-            }}
-          >
-            Learn More
-          </button>
+          <Link to="/Modul">
+            <button
+              type="button"
+              className="btn btn-dark mt-5"
+              style={{
+                padding: "10px 36px",
+                borderWidth: "2px",
+                borderRadius: "50px",
+                color: "#ffff",
+                fontSize: "20px",
+                borderColor: "#71af58",
+              }}
+            >
+              Pergi Ke Modul
+            </button>
+          </Link>
         </div>
 
-        {/* <div>
-          <p className="text-white">Berita</p>
-          {modules.map((item, index) => {
-            return(
-              <div>
-                <p className="text-white">{item.title}</p>
+        ---
+
+        {/* Latest Stock News Section */}
+        <div className="mt-5 pt-5 container">
+          <div className="mt-3 pt-5">
+            <h1 className="text-left text-white" style={{ fontSize: "60px" }}>
+              Latest Stock News
+            </h1>
+            <p className="mt-3 text-left text-white" style={{ fontSize: "20px" }}>
+              Stay updated with the latest stock market news and trends that could impact your investments.
+              Our curated news feed brings you the most relevant financial updates.
+            </p>
+          </div>
+
+          {news.title && news.title.length > 0 ? (
+            <div id="newsCarousel" className="carousel slide mt-5" data-bs-ride="carousel">
+              {/* Indicators */}
+              <div className="carousel-indicators">
+                {news.title.map((_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    data-bs-target="#newsCarousel"
+                    data-bs-slide-to={index}
+                    className={index === 0 ? "active" : ""}
+                    aria-current={index === 0 ? "true" : "false"}
+                  />
+                ))}
               </div>
-            )
-          })}
-        </div> */}
 
-
-        {/* Berita Saham */}
-        {/* Modules Section */}
-<div className="mt-5 pt-5 container">
-  <div className="mt-3 pt-5">
-    <h1 className="text-left text-white" style={{ fontSize: "60px" }}>
-      Our Learning Modules
-    </h1>
-    <p className="mt-3 text-left text-white" style={{ fontSize: "20px" }}>
-      Explore our comprehensive learning modules designed to take you from beginner to proficient investor.
-      Each module covers essential topics with interactive content and practical exercises.
-    </p>
-  </div>
-
-  <div>
-    {modules.length > 0 ? (
-      <div
-        id="modulesCarousel"
-        className="carousel slide"
-        data-bs-ride="carousel"
-      >
-        <div className="carousel-inner">
-          {/* Create groups of 3 modules per carousel item */}
-          {modules.reduce((acc, module, index) => {
-            const chunkIndex = Math.floor(index / 3);
-            
-            if (!acc[chunkIndex]) {
-              acc[chunkIndex] = [];
-            }
-            
-            acc[chunkIndex].push(module);
-            return acc;
-          }, []).map((moduleGroup, groupIndex) => (
-            <div 
-              className={`carousel-item ${groupIndex === 0 ? 'active' : ''}`} 
-              key={`module-group-${groupIndex}`}
-            >
-              <div className="container d-flex justify-content-evenly mt-5">
-                {moduleGroup.map((module, moduleIndex) => (
-                  <div className="card" style={{ width: "18rem" }} key={`module-${groupIndex}-${moduleIndex}`}>
-                    <img 
-                      src={module.image_url || stonkImage} 
-                      className="card-img-top" 
-                      alt={module.title} 
-                      style={{ height: "180px", objectFit: "cover" }}
-                    />
-                    <div className="card-body">
-                      <h5 className="card-title">{module.title}</h5>
-                      <p className="card-text">
-                        {module.description || "Learn about stock market fundamentals and strategies."}
-                      </p>
-                      <a 
-                        href={`/module/${module.id}`} 
-                        className="btn btn-primary"
-                        style={{
-                          backgroundColor: "#6F9356",
-                          borderColor: "#6F9356"
-                        }}
-                      >
-                        Start Learning
-                      </a>
+              {/* Carousel items */}
+              <div className="carousel-inner" style={{ borderRadius: "15px" }}>
+                {news.title.map((title, index) => (
+                  <div className={`carousel-item ${index === 0 ? "active" : ""}`} key={index}>
+                    <div className="d-flex justify-content-center">
+                      <div className="card" style={{ width: "70%", maxWidth: "800px" }}>
+                        <img
+                          src={news.image[index] || stonkImage}
+                          className="card-img-top"
+                          alt={title}
+                          style={{ height: '400px', objectFit: 'cover' }}
+                        />
+                        <div className="card-body">
+                          <h5 className="card-title">{title}</h5>
+                          <p className="card-text">
+                            Klik "Telusuri" Untuk Melihat Berita.
+                          </p>
+                          <a href={news.link[index]} className="btn btn-success" target="_blank" rel="noopener noreferrer">
+                            Telusuri
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
+
+              {/* Controls */}
+              <button className="carousel-control-prev" type="button" data-bs-target="#newsCarousel" data-bs-slide="prev">
+                <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span className="visually-hidden">Previous</span>
+              </button>
+              <button className="carousel-control-next" type="button" data-bs-target="#newsCarousel" data-bs-slide="next">
+                <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                <span className="visually-hidden">Next</span>
+              </button>
             </div>
-          ))}
+          ) : (
+            <p className="text-white text-center w-100">No news available at the moment. Please try again later.</p>
+          )}
         </div>
-        <button
-          className="carousel-control-prev pe-5"
-          type="button"
-          data-bs-target="#modulesCarousel"
-          data-bs-slide="prev"
-        >
-          <span
-            className="carousel-control-prev-icon"
-            aria-hidden="true"
+        <Link to="/Berita">
+          <button
+            type="button"
+            className="btn btn-dark mt-5"
             style={{
-              width: "56px",
-              height: "78px",
-              objectFit: "cover",
+              padding: "10px 36px",
+              borderWidth: "2px",
+              borderRadius: "50px",
+              color: "#ffff",
+              fontSize: "20px",
+              borderColor: "#71af58",
             }}
-          ></span>
-          <span className="visually-hidden">Previous</span>
-        </button>
-        <button
-          className="carousel-control-next ps-5"
-          type="button"
-          data-bs-target="#modulesCarousel"
-          data-bs-slide="next"
-        >
-          <span
-            className="carousel-control-next-icon"
-            aria-hidden="true"
-            style={{
-              width: "56px",
-              height: "78px",
-              objectFit: "cover",
-            }}
-          ></span>
-          <span className="visually-hidden">Next</span>
-        </button>
+          >
+            Pergi Ke Berita
+          </button>
+        </Link>
       </div>
-    ) : (
-      <div className="text-center text-white mt-5">
-        <p>Loading modules...</p>
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
-    )}
-  </div>
-</div>
-      </div>
+
+      ---
 
       {/* Stock Chart View */}
       <div className="mt-5 pt-5 container">
@@ -401,7 +348,7 @@ const Modul = () => {
           <div className="d-flex justify-content-center mt-5">
             <img
               src={chartImage}
-              alt=""
+              alt="Stock Chart"
               style={{ borderRadius: "50px", width: "1100px" }}
             />
           </div>
@@ -420,118 +367,65 @@ const Modul = () => {
           </p>
         </div>
         <div className="d-flex justify-content-center ">
-          <button
-            type="button"
-            className="btn btn-dark mt-2"
-            style={{
-              padding: "10px 36px", // padding (top-bottom: 10px, left-right: 30px)
-              borderWidth: "2px", // thicker outline
-              borderRadius: "50px", // rounded corners     // custom green border
-              color: "#ffff", // text color
-              fontSize: "20px",
-              borderColor: "#71af58",
-              //backgroundColor: "#1b1b1b"
-            }}
-          >
-            Learn More
-          </button>
+          <Link to="/StockChart">
+            <button
+              type="button"
+              className="btn btn-dark mt-5"
+              style={{
+                padding: "10px 36px",
+                borderWidth: "2px",
+                borderRadius: "50px",
+                color: "#ffff",
+                fontSize: "20px",
+                borderColor: "#71af58",
+              }}
+            >
+              Pergi Ke StockChart
+            </button>
+          </Link>
         </div>
       </div>
 
-      <div className="d-flex justify-content-evenly mt-5 pt-5 container">
-        {/* kotak paling luar */}
-        <div className="d-flex-column">
-          {/* kotak kiri kecil */}
-          <div className="d-flex mb-3">
-            <div className="card me-3" style={{ width: "18rem" }}>
-              <img src={stonkImage} className="card-img-top" alt="Sample" />
-              <div className="card-body">
-                <h5 className="card-title">Harga Batu Bara Turun</h5>
-                <p className="card-text">
-                  Some quick example text to build on the card title and make up
-                  the bulk of the card's content.
-                </p>
-                <a href="#" className="btn btn-primary">
-                  Learn more
-                </a>
-              </div>
-            </div>
-            <div className="card" style={{ width: "18rem" }}>
-              <img src={stonkImage} className="card-img-top" alt="Sample" />
-              <div className="card-body">
-                <h5 className="card-title">Harga Batu Bara Turun</h5>
-                <p className="card-text">
-                  Some quick example text to build on the card title and make up
-                  the bulk of the card's content.
-                </p>
-                <a href="#" className="btn btn-primary">
-                  Learn more
-                </a>
-              </div>
-            </div>
-          </div>
+      ---
 
-          {/* Kotak kanan kecil */}
-          <div className="d-flex">
-            <div className="card me-3" style={{ width: "18rem" }}>
-              <img src={stonkImage} className="card-img-top" alt="Sample" />
-              <div className="card-body">
-                <h5 className="card-title">Harga Batu Bara Turun</h5>
-                <p className="card-text">
-                  Some quick example text to build on the card title and make up
-                  the bulk of the card's content.
-                </p>
-                <a href="#" className="btn btn-primary">
-                  Learn more
-                </a>
-              </div>
-            </div>
-            <div className="card" style={{ width: "18rem" }}>
-              <img src={stonkImage} className="card-img-top" alt="Sample" />
-              <div className="card-body">
-                <h5 className="card-title">Harga Batu Bara Turun</h5>
-                <p className="card-text">
-                  Some quick example text to build on the card title and make up
-                  the bulk of the card's content.
-                </p>
-                <a href="#" className="btn btn-primary">
-                  Learn more
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="d-flex justify-content-evenly mt-5 pt-5 container">
         <div className="d-flex flex-column my-5">
           <h1 className="text-end text-white" style={{ fontSize: "60px" }}>
             Forum Diskusi
           </h1>
-          <p className="mt-3 text-end text-white" style={{ fontSize: "20px" }}>
-            Gabung sekarang di forum diskusi saham kami <br></br>dan temukan
-            berbagai insight dari para investor berpengalaman.<br></br>{" "}
-            Diskusikan strategi, berbagi tips, dan dapatkan analisis pasar yang
-            up-to-date secara langsung.<br></br> Jangan lewatkan kesempatan
-            untuk memperluas jaringan dan <br></br>
-            meningkatkan pengetahuan investasi Anda bersama komunitas kami!
-          </p>
+          <div className="d-flex flex-row">
+            <img src={discussion} className="mx-5" style={{ width: "200px", height: "auto" }} />
+            <p className="mt-3 text-end text-white" style={{ fontSize: "20px" }}>
+              Gabung sekarang di forum diskusi saham kami <br></br>dan temukan
+              berbagai insight dari para investor berpengalaman.<br></br>{" "}
+              Diskusikan strategi, berbagi tips, dan dapatkan analisis pasar yang
+              up-to-date secara langsung.<br></br> Jangan lewatkan kesempatan
+              untuk memperluas jaringan dan <br></br>
+              meningkatkan pengetahuan investasi Anda bersama komunitas kami!
+            </p>
+          </div>
           <div className="align-self-end">
-            <button
-              type="button"
-              className="btn btn-dark mt-2"
-              style={{
-                padding: "10px 36px", // padding (top-bottom: 10px, left-right: 30px)
-                borderWidth: "2px", // thicker outline
-                borderRadius: "50px", // rounded corners     // custom green border
-                color: "#ffff", // text color
-                fontSize: "20px",
-                borderColor: "#71af58",
-                //backgroundColor: "#1b1b1b"
-              }}
-            >
-              Learn More
-            </button>
+            <Link to="/Forum">
+              <button
+                type="button"
+                className="btn btn-dark mt-5"
+                style={{
+                  padding: "10px 36px",
+                  borderWidth: "2px",
+                  borderRadius: "50px",
+                  color: "#ffff",
+                  fontSize: "20px",
+                  borderColor: "#71af58",
+                }}
+              >
+                Pergi Ke Forum
+              </button>
+            </Link>
           </div>
         </div>
       </div>
+
+      ---
 
       <div className="mt-5 pt-5 container">
         <h1 className="text-center text-white" style={{ fontSize: "60px" }}>
@@ -550,7 +444,7 @@ const Modul = () => {
           <div style={{ position: "relative", width: "1100px" }}>
             <img
               src={chartImage}
-              alt=""
+              alt="Blurred Stock Chart"
               style={{
                 borderRadius: "50px",
                 width: "100%",
@@ -580,25 +474,25 @@ const Modul = () => {
             </div>
           </div>
         </div>
-        <div className="d-flex justify-content-center">
-          <button
-            type="button"
-            className="mt-5 mb-5 btn btn-dark mt-2"
-            style={{
-              padding: "10px 36px", // padding (top-bottom: 10px, left-right: 30px)
-              borderWidth: "2px", // thicker outline
-              borderRadius: "50px", // rounded corners     // custom green border
-              color: "#ffff", // text color
-              fontSize: "20px",
-              borderColor: "#71af58",
-              //backgroundColor: "#1b1b1b"
-            }}
-          >
-            Learn More
-          </button>
+        <div className="d-flex justify-content-center mb-5 pb-5">
+          <Link to="/Produk">
+            <button
+              type="button"
+              className="btn btn-dark mt-5"
+              style={{
+                padding: "10px 36px",
+                borderWidth: "2px",
+                borderRadius: "50px",
+                color: "#ffff",
+                fontSize: "20px",
+                borderColor: "#71af58",
+              }}
+            >
+              Pergi Ke Produk
+            </button>
+          </Link>
         </div>
       </div>
-
       <Footer />
     </div>
   );
