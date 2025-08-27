@@ -10,6 +10,9 @@ import { PageContext } from "../App.jsx";
 import styled, { keyframes } from 'styled-components';
 import { motion } from "framer-motion";
 import LockedImage from "../assets/Locked.jpg"
+import { getAllModules, addModuleToUser, getUserModules } from '../../query.jsx'
+import { supabase } from "../supabaseClient";
+
 
 // Keyframes for border animation
 const glowingBorder = keyframes`
@@ -217,6 +220,7 @@ const LockShine = styled.div`
 
 
 const Modul = () => {
+  const user = supabase.auth.getUser();
   const location = useLocation();
   const navigate = useNavigate();
   const [userModules, setUserModules] = useState([]);
@@ -252,98 +256,87 @@ const Modul = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (username) {
-      axios.get(`http://localhost:8000/users/${username}`)
-        .then(response => {
-          setUserModules(response.data.modules || []);
-        })
-        .catch(error => {
-          console.error("Error fetching user modules:", error);
-        });
-    }
-  }, [username]);
+  // useEffect(() => {
+  //   if (username) {
+  //     axios.get(`http://localhost:8000/users/${username}`)
+  //       .then(response => {
+  //         setUserModules(response.data.modules || []);
+  //       })
+  //       .catch(error => {
+  //         console.error("Error fetching user modules:", error);
+  //       });
+  //   }
+  // }, [username]);
 
   useEffect(() => {
-    const handleModules = async () => {
-      try {
-        const response = await axios.get("http://127.0.0.1:8000/modules");
-        setModules(response.data);
-      } catch (error) {
-        console.log("Error when getting modules!");
-      }
+    const fetchModules = async () => {
+      const data = await getAllModules();
+      console.log('data : ', data)
+      setModules(data);
     };
-    handleModules();
+    fetchModules();
+  }, []);
+
+  useEffect(() => {
+    const fetchUserModules = async () => {
+      const { data: userData, error } = await supabase.auth.getUser();
+      if (error || !userData?.user) return;
+
+      const userId = userData.user.id;
+      const modules = await getUserModules(userId);
+      console.log("modules nih : ", modules);
+      setUserModules(modules.map(id => `Modul ${id}`)); // agar sama format dengan sebelumnya
+    };
+
+    fetchUserModules();
   }, []);
 
   const handleIsModuleClicked = (id) => {
-    setSelectedModuleId("Modul " + String(id))
+    setSelectedModuleId("Modul " + String(id));
     setIsModuleClicked(true);
     setIdClicked(id);
-    const temp_module = modules.filter((item, index) => (index + 1) === id);
-    setSelectedModules(temp_module[0]);
-    setChatHistory([]); // Clear chat history when a new module is selected
-    setQuestion(""); // Clear question input
+
+    const temp_module = modules.find((item) => Number(item.id) === id);
+    setSelectedModules(temp_module);
+
+    setChatHistory([]);
+    setQuestion("");
   };
+
 
   const handleAnswer = (answer) => {
-    let valid = false;
-    if (selectedOption) {
-      selectedModules.option.forEach((item, index) => {
-        if (answer === item) {
-          if (selectedOption === index + 1) {
-            valid = true;
-          }
-        }
-      });
-    }
-    if (valid) {
-      setSelectedAnswer(null);
-      setSelectedOption(null);
-      setIsCorrect(null);
-    } else {
-      setSelectedAnswer(answer);
-      setIsCorrect(answer === selectedModules.correctAnswer);
-      selectedModules.option.forEach((item, index) => {
-        if (answer === item) {
-          setSelectedOption(index + 1);
-        }
-      });
-    }
+    const normalizedAnswer = answer.trim().toLowerCase();
+    const normalizedCorrect = selectedModules.correct_answer?.trim().toLowerCase();
+
+    setSelectedAnswer(answer);
+    setIsCorrect(normalizedAnswer === normalizedCorrect);
   };
+
+
 
   const handleModuleSubmit = async () => {
-    if (!selectedAnswer) {
-      setMessage("Silakan pilih jawaban terlebih dahulu!");
-      return;
-    }
-    if (!isCorrect) {
-      setMessage("Jawaban masih salah. Silakan coba lagi!");
-      return;
-    }
-    if (!username) {
-      setMessage("Username tidak ditemukan.");
-      return;
-    }
+    const { data: userData, error } = await supabase.auth.getUser();
+    if (error || !userData?.user) return setMessage("User tidak ditemukan.");
 
-    if (userModules.includes(`Modul ${selectedModules.id}`)) {
-      setMessage("Kamu Sudah Pernah Menjawab Benar. 👍");
-      return;
-    }
+    const userId = userData.user.id;
 
-    const updatedModules = [...userModules, `Modul ${selectedModules.id}`];
+    if (!selectedAnswer) return setMessage("Silakan pilih jawaban!");
+    if (!isCorrect) return setMessage("Jawaban masih salah!");
 
     try {
-      await axios.put(`http://localhost:8000/users/${username}/modules`, updatedModules);
-      setUserModules(updatedModules);
-      setMessage("Modul berhasil ditambahkan.");
-      navigate("/Modul"); // Consider whether to navigate back or just show success
-    } catch (error) {
-      console.error("Error updating user modules:", error);
+      const result = await addModuleToUser(userId, selectedModules.id);
+      if (!result.success) {
+        setMessage(result.message);
+      } else {
+        // setUserModules(prev => [...prev, `Modul ${selectedModules.id}`]);
+        setMessage("Modul berhasil diselesaikan.");
+      }
+    } catch (err) {
+      console.error(err);
       setMessage("Terjadi kesalahan saat menambahkan modul.");
     }
-    setIsModuleClicked(false);
   };
+
 
   const handleQuestionChange = (event) => {
     setQuestion(event.target.value);
@@ -501,15 +494,16 @@ const Modul = () => {
                     <h4 className="text-center">{selectedModules.question}</h4>
                     <div className="mt-3">
                       {selectedModules.option.map((choice, index) => (
-                        <div key={index}>
-                          <button
-                            className={`btn btn-outline-light d-block w-100 my-2 ${selectedAnswer === choice ? (isCorrect ? "btn-success" : "btn-danger") : ""}`}
-                            onClick={() => handleAnswer(choice)}
-                          >
-                            {choice}
-                          </button>
-                        </div>
+                        <button
+                          key={index}
+                          className={`btn btn-outline-light d-block w-100 my-2 
+      ${selectedAnswer === choice ? (isCorrect ? "btn-success" : "btn-danger") : ""}`}
+                          onClick={() => handleAnswer(choice, index)}
+                        >
+                          {choice}
+                        </button>
                       ))}
+
                     </div>
                     {selectedAnswer && (
                       <p className="mt-3 text-center">

@@ -1,248 +1,131 @@
 import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState, useEffect, useContext } from "react";
+import { PageContext } from "../App.jsx";
+import { supabase } from "../supabaseClient";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import backgroundImage from "../assets/BackgroundBody.png";
-import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
-import { useLocation } from "react-router-dom";
-import {PageContext} from "../App.jsx"
-import { motion } from "framer-motion";
+import { insertUsers } from "../../query.jsx";
 
 const Login = () => {
-  const location = useLocation();
-  
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
-  const [loggedIn, setLoggedIn] = useState(false); // State untuk status login
-  const [bgHeight, setBgHeight] = useState("100vh"); // Default tinggi layar
-  const {currPage, handleCurrPage} = useContext(PageContext)
-
-  useEffect(() =>{
-    handleCurrPage("Login")
-  }, [])
-  // Cek apakah user sudah login (username disimpan di localStorage)
-  useEffect(() => {
-    const storedUsername = localStorage.getItem('username');
-    if (storedUsername) {
-      setUsername(storedUsername);
-      setLoggedIn(true);
-    }
-  }, []);
+  const [session, setSession] = useState(null);
+  // Tambahkan state untuk loading
+  const [loading, setLoading] = useState(true);
+  const { handleCurrPage } = useContext(PageContext);
 
   useEffect(() => {
-    const img = new Image();
-    img.src = backgroundImage;
-    img.onload = () => {
-      setBgHeight(`${img.height}px`); // Set tinggi sesuai gambar
-    };
-  }, []);
+    handleCurrPage("Login");
 
-  // Fungsi untuk login
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:8000/login', {
-        username: username,
-        password: password,
-      });
-      
-      if (response.data.message === "Login successful") {
-        localStorage.setItem('username', username); // Simpan username di localStorage
-        setLoggedIn(true);
-        setMessage(`Selamat datang ${username}!`);
+    // Listener perubahan auth
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+        setLoading(false);
       }
-    } catch (error) {
-      if (error.response && error.response.status === 404) {
-        setMessage('Username tidak ditemukan!');
-      } else if (error.response && error.response.status === 401) {
-        setMessage('Password salah!');
-      } else {
-        setMessage('Terjadi kesalahan saat login.');
+    );
+
+    // Cek sesi aktif
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    // Extra: cek user (kadang lebih cepat dari session)
+    supabase.auth.getUser().then(({ data: { user }, error }) => {
+      if (user) {
+        setSession({ user }); // Bungkus ke bentuk mirip session
       }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [handleCurrPage]);
+
+  useEffect(() => {
+    if (session?.user) {
+      const { id, email, user_metadata } = session.user;
+      const name = user_metadata?.full_name || "No name"; // default kalau belum ada
+      console.log("User ID:", id);
+      console.log("Name:", name);
+      console.log("Email:", email);
+      addUser(id, name, email);
+    }
+  }, [session]);
+
+  const addUser = async (id, username, email) => {
+    const result = await insertUsers(id, username, email)
+    console.log("nih, result : ", result);
+  }
+
+  // Fungsi handleGoogleLogin dan handleLogout tetap sama
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: "http://localhost:5173/LoginPage"
+      }
+    });
+    if (error) {
+      console.error("Error logging in with Google:", error);
     }
   };
 
-  // Fungsi untuk logout
-  const handleLogout = () => {
-    localStorage.removeItem('username');
-    setUsername('');
-    setPassword('');
-    setLoggedIn(false);
-    setMessage('');
-  };
-
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        when: "beforeChildren"
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut"
-      }
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error logging out:", error);
     }
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100vh",
-        position: "relative",
-      }}
-    >
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      minHeight: "100vh",
+      backgroundImage: `url(${backgroundImage})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+    }}>
       <Navbar />
-      <div
-        style={{
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: "cover",
-          backgroundPosition: "top",
-          backgroundRepeat: "no-repeat",
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          zIndex: -1, // Background di belakang konten
-        }}
-      />
-      <div className="container flex-grow-1">
-        <h2 className="text-center my-5 text-white">{loggedIn ? 
-        (<motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center my-5 py-5"
-        >
-          <motion.h2
-            style={{
-              fontSize: "3rem",
-              fontWeight: "700",
-              textShadow: "0 2px 10px rgba(0,0,0,0.3)",
-              background: "linear-gradient(to right, #fff, #ddd)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              position: "relative",
-              paddingBottom: "20px"
-            }}
-          >
-            Hallo, {username}!
-            <motion.div 
-              style={{
-                position: "absolute",
-                bottom: "10px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                height: "4px",
-                width: "100px",
-                background: "linear-gradient(to right, #d9d9d9, #848484)", 
-                borderRadius: "2px",
-                marginTop : "100px"
-              }}
-              initial={{ width: 0 }}
-              animate={{ width: "100px" }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-            />
-          </motion.h2>
-        </motion.div>)
-        : 
-        (
-          <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center my-5 py-5"
-        >
-          <motion.h2
-            style={{
-              fontSize: "3rem",
-              fontWeight: "700",
-              textShadow: "0 2px 10px rgba(0,0,0,0.3)",
-              background: "linear-gradient(to right, #fff, #ddd)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              position: "relative",
-              paddingBottom: "20px"
-            }}
-          >
-            Login Form
-            <motion.div 
-              style={{
-                position: "absolute",
-                bottom: "10px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                height: "4px",
-                width: "100px",
-                background: "linear-gradient(to right, #d9d9d9, #848484)", 
-                borderRadius: "2px",
-                marginTop : "100px"
-              }}
-              initial={{ width: 0 }}
-              animate={{ width: "100px" }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-            />
-          </motion.h2>
-        </motion.div>
-        )}</h2>
 
-        {/* Jika belum login, tampilkan form login */}
-        {!loggedIn ? (
-          <div className="row justify-content-center">
-            <div className="col-md-6 mb-4">
-              <div className="card shadow-sm">
-                <div className="card-body">
-                  <form onSubmit={handleLogin}>
-                    <div className="mb-3">
-                      <label htmlFor="username" className="form-label text-dark">Username:</label>
-                      <input
-                        type="text"
-                        id="username"
-                        className="form-control"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label htmlFor="password" className="form-label text-dark">Password:</label>
-                      <input
-                        type="password"
-                        id="password"
-                        className="form-control"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <button type="submit" className="btn btn-success w-100">Login</button>
-                  </form>
-                </div>
-              </div>
+      <main className="container d-flex flex-grow-1 flex-column justify-content-center align-items-center text-center text-white">
+        <div
+          className="p-4 rounded"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)'
+          }}
+        >
+          {/* Tampilkan loading spinner jika sedang memeriksa status auth */}
+          {loading ? (
+            <div>
+              <h1>Loading...</h1>
+              <p>Please wait while we check your session.</p>
             </div>
-          </div>
-        ) : (
-          // Jika sudah login, tampilkan nama pengguna
-          <div>
-            <h3 className="text-white">Selamat datang, {username}!</h3>
-            <button className="btn btn-danger mt-3" onClick={handleLogout}>Logout</button>
-          </div>
-        )}
-      </div>
+          ) : session ? (
+            // Jika user SUDAH login
+            <div>
+              <h1>Welcome Back!</h1>
+              <p>You are logged in as:</p>
+              <p><strong>{session.user.email}</strong></p>
+              <button onClick={handleLogout} className="btn btn-danger w-100 mt-3">
+                Logout
+              </button>
+            </div>
+          ) : (
+            // Jika user BELUM login
+            <div>
+              <h1>Login or Sign Up</h1>
+              <p>Continue with your Google account to get started.</p>
+              <button onClick={handleGoogleLogin} className="btn btn-success w-100 mt-3">
+                Login with Google
+              </button>
+            </div>
+          )}
+        </div>
+      </main>
+
       <Footer />
     </div>
   );
