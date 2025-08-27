@@ -110,7 +110,7 @@ function Home() {
       const username = user.user_metadata?.username || user.email;
 
       // Bagian API Groq untuk klasifikasi
-      const apiKey = process.env.REACT_APP_API_KEY;
+      const apiKey = import.meta.env.VITE_GROQ_API_KEY;
       const apiUrl = "https://api.groq.com/openai/v1/chat/completions";
       const requestBody = {
         model: "llama3-8b-8192",
